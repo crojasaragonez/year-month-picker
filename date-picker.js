@@ -45,15 +45,19 @@ class DatePicker extends HTMLElement {
       .month{
         width: 25%;
       }
+      #previous-year, #next-year {
+        width: 25%;
+      }
       #today_btn {
-        flex-grow: 1;
+        width: 50%;
       }
       input {
         box-sizing: border-box;
+        width: 100%;
       }
     </style>
     <div class="picker-container">
-        <input type="text" id="picker_input">
+      <input type="text" id="picker_input">
       <div class="picker-body">
         <div class="year-picker">
           <button id="previous-year"><</button>
@@ -112,6 +116,8 @@ class DatePicker extends HTMLElement {
 
     this.next_year_btn.addEventListener('click', (event) => this._changeYearBy(1));
     this.previous_year_btn.addEventListener('click', (event) => this._changeYearBy(-1));
+    this.accept_btn.addEventListener('click', (event) => this._togglePicker(false));
+    this.picker_input.addEventListener('focus', (event) => this._togglePicker(true));
 
     this.month_btn.forEach((btn) => {
       btn.addEventListener('click', (event) => {
@@ -119,17 +125,26 @@ class DatePicker extends HTMLElement {
         this._render();
       });
     });
-    this.accept_btn.addEventListener('click', (event) => this._togglePicker(false));
-    this.picker_input.addEventListener('focus', (event) => this._togglePicker(true));
+
+    this.picker_input.addEventListener('change', (event) => {
+      const incomming_value = event.target.value;
+      const regexp = /(\d{4})-(\d{2})/g;
+      const result = regexp.exec(incomming_value);
+      if (!result) return;
+      if (result[1])
+        this._year =  parseInt(result[1]);
+      if (result[2])
+        this._month = result[2];
+    });
   }
 
   _render(){
     if (this._show_picker) {
       this.picker_widget.style.display = 'block';
       this.picker_input.value = this.value;
-    } else {
-      this.picker_widget.style.display = 'none';
+      return;
     }
+    this.picker_widget.style.display = 'none';
   }
 }
 
