@@ -7,26 +7,24 @@ class DatePicker extends HTMLElement {
     this.picker_input = null;
     this.picker_widget = null;
     this.accept_btn = null;
-    this.cancel_btn = null;
+    this.month_btn = null;
+    this.next_year_btn = null;
+    this.today_btn = null;
+    this.previous_year_btn = null;
     // Data
-    this._months = {
-      'Jan': '01',
-      'Feb': '02',
-      'Mar': '03',
-      'Apr': '04',
-      'May': '05',
-      'Jun': '06',
-      'Jul': '07',
-      'Aug': '08',
-      'Sep': '09',
-      'Oct': '10',
-      'Nov': '11',
-      'Dec': '12'
-    }
     this._show_picker = false;
+    this._year = null;
+    this._month = null;
+    this.today();
+  }
+
+  today() {
     this._year = new Date().getFullYear();
-    this._month = new Date().getMonth();
-    this._value = `${this._year}-${this._month}`;
+    this._month = ("0" + new Date().getMonth()).slice(-2);
+  }
+
+  get value() {
+    return `${this._year}-${this._month}`;
   }
 
   connectedCallback() {
@@ -47,7 +45,7 @@ class DatePicker extends HTMLElement {
       .month{
         width: 25%;
       }
-      #current-year {
+      #today_btn {
         flex-grow: 1;
       }
     </style>
@@ -58,25 +56,24 @@ class DatePicker extends HTMLElement {
       <div class="picker-body">
         <div class="year-picker">
           <button id="previous-year"><</button>
-          <button id="current-year">2019</button>
+          <button id="today_btn">Today</button>
           <button id="next-year">></button>
         </div>
         <div class="month-picker">
-          <button class="month">Jan</button>
-          <button class="month">Feb</button>
-          <button class="month">Mar</button>
-          <button class="month">Apr</button>
-          <button class="month">May</button>
-          <button class="month">Jun</button>
-          <button class="month">Jul</button>
-          <button class="month">Aug</button>
-          <button class="month">Sep</button>
-          <button class="month">Oct</button>
-          <button class="month">Nov</button>
-          <button class="month">Dec</button>
+          <button class="month" value="01">Jan</button>
+          <button class="month" value="02">Feb</button>
+          <button class="month" value="03">Mar</button>
+          <button class="month" value="04">Apr</button>
+          <button class="month" value="05">May</button>
+          <button class="month" value="06">Jun</button>
+          <button class="month" value="07">Jul</button>
+          <button class="month" value="08">Aug</button>
+          <button class="month" value="09">Sep</button>
+          <button class="month" value="10">Oct</button>
+          <button class="month" value="11">Nov</button>
+          <button class="month" value="12">Dec</button>
         </div>
         <div class="picker-footer">
-          <button id="cancel_btn">Cancel</button>
           <button id="accept_btn">Accept</button>
         </div>
       </div>
@@ -84,13 +81,29 @@ class DatePicker extends HTMLElement {
     this.picker_input = this._root.getElementById('picker_input');
     this.picker_widget = this._root.querySelector('.picker-body');
     this.accept_btn = this._root.getElementById('accept_btn');
-    this.accept_btn.addEventListener('click', (event) => {
-      this._show_picker = false;
-      this.picker_input.value = this._value;
+    this.month_btn = this._root.querySelectorAll('.month');
+    this.today_btn = this._root.getElementById('today_btn');
+    this.today_btn.addEventListener('click', (event) => {
+      this.today();
       this._render();
     });
-    this.cancel_btn = this._root.getElementById('cancel_btn');
-    this.cancel_btn.addEventListener('click', (event) => {
+    this.next_year_btn = this._root.getElementById('next-year');
+    this.next_year_btn.addEventListener('click', (event) => {
+      this._year ++;
+      this._render();
+    });
+    this.previous_year_btn = this._root.getElementById('previous-year');
+    this.previous_year_btn.addEventListener('click', (event) => {
+      this._year --;
+      this._render();
+    });
+    this.month_btn.forEach((btn) => {
+      btn.addEventListener('click', (event) => {
+        this._month = event.target.value;
+        this._render();
+      });
+    });
+    this.accept_btn.addEventListener('click', (event) => {
       this._show_picker = false;
       this._render();
     });
@@ -104,6 +117,7 @@ class DatePicker extends HTMLElement {
   _render(){
     if (this._show_picker) {
       this.picker_widget.style.display = 'block';
+      this.picker_input.value = this.value;
     } else {
       this.picker_widget.style.display = 'none';
     }
