@@ -48,11 +48,12 @@ class DatePicker extends HTMLElement {
       #today_btn {
         flex-grow: 1;
       }
+      input {
+        box-sizing: border-box;
+      }
     </style>
     <div class="picker-container">
-      <div class="input-container">
         <input type="text" id="picker_input">
-      </div>
       <div class="picker-body">
         <div class="year-picker">
           <button id="previous-year"><</button>
@@ -78,40 +79,48 @@ class DatePicker extends HTMLElement {
         </div>
       </div>
     </div>`;
-    this.picker_input = this._root.getElementById('picker_input');
-    this.picker_widget = this._root.querySelector('.picker-body');
-    this.accept_btn = this._root.getElementById('accept_btn');
-    this.month_btn = this._root.querySelectorAll('.month');
-    this.today_btn = this._root.getElementById('today_btn');
+    this._initElements();
+    this._setupEvents();
+    this._render();
+  }
+
+  _initElements(){
+    this.picker_input      = this._root.getElementById('picker_input');
+    this.picker_widget     = this._root.querySelector('.picker-body');
+    this.accept_btn        = this._root.getElementById('accept_btn');
+    this.month_btn         = this._root.querySelectorAll('.month');
+    this.today_btn         = this._root.getElementById('today_btn');
+    this.next_year_btn     = this._root.getElementById('next-year');
+    this.previous_year_btn = this._root.getElementById('previous-year');
+  }
+
+  _changeYearBy(number) {
+    this._year += number;
+    this._render();
+  }
+
+  _togglePicker(value) {
+    this._show_picker = value;
+    this._render();
+  }
+
+  _setupEvents(){
     this.today_btn.addEventListener('click', (event) => {
       this.today();
       this._render();
     });
-    this.next_year_btn = this._root.getElementById('next-year');
-    this.next_year_btn.addEventListener('click', (event) => {
-      this._year ++;
-      this._render();
-    });
-    this.previous_year_btn = this._root.getElementById('previous-year');
-    this.previous_year_btn.addEventListener('click', (event) => {
-      this._year --;
-      this._render();
-    });
+
+    this.next_year_btn.addEventListener('click', (event) => this._changeYearBy(1));
+    this.previous_year_btn.addEventListener('click', (event) => this._changeYearBy(-1));
+
     this.month_btn.forEach((btn) => {
       btn.addEventListener('click', (event) => {
         this._month = event.target.value;
         this._render();
       });
     });
-    this.accept_btn.addEventListener('click', (event) => {
-      this._show_picker = false;
-      this._render();
-    });
-    this.picker_input.addEventListener('focus', (event) => {
-      this._show_picker = true;
-      this._render();
-    });
-    this._render();
+    this.accept_btn.addEventListener('click', (event) => this._togglePicker(false));
+    this.picker_input.addEventListener('focus', (event) => this._togglePicker(true));
   }
 
   _render(){
