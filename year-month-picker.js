@@ -1,5 +1,5 @@
-class DatePicker extends HTMLElement {
-  constructor(){
+class YearMonthPicker extends HTMLElement {
+  constructor() {
     super();
     // Shadow Root
     this._root = this.attachShadow({mode: 'open'});
@@ -20,7 +20,7 @@ class DatePicker extends HTMLElement {
 
   today() {
     this._year = new Date().getFullYear();
-    this._month = ("0" + new Date().getMonth()).slice(-2);
+    this._month = ('0' + new Date().getMonth()).slice(-2);
   }
 
   get value() {
@@ -88,13 +88,13 @@ class DatePicker extends HTMLElement {
     this._render();
   }
 
-  _initElements(){
-    this.picker_input      = this._root.getElementById('picker_input');
-    this.picker_widget     = this._root.querySelector('.picker-body');
-    this.accept_btn        = this._root.getElementById('accept_btn');
-    this.month_btn         = this._root.querySelectorAll('.month');
-    this.today_btn         = this._root.getElementById('today_btn');
-    this.next_year_btn     = this._root.getElementById('next-year');
+  _initElements() {
+    this.picker_input = this._root.getElementById('picker_input');
+    this.picker_widget = this._root.querySelector('.picker-body');
+    this.accept_btn = this._root.getElementById('accept_btn');
+    this.month_btn = this._root.querySelectorAll('.month');
+    this.today_btn = this._root.getElementById('today_btn');
+    this.next_year_btn = this._root.getElementById('next-year');
     this.previous_year_btn = this._root.getElementById('previous-year');
   }
 
@@ -108,7 +108,7 @@ class DatePicker extends HTMLElement {
     this._render();
   }
 
-  _setupEvents(){
+  _setupEvents() {
     this.today_btn.addEventListener('click', (event) => {
       this.today();
       this._render();
@@ -126,19 +126,26 @@ class DatePicker extends HTMLElement {
       });
     });
 
+    this.picker_input.addEventListener('keyup', (event) => {
+      // when Enter key was pressed
+      if (event.keyCode == 13) {
+        this._togglePicker(false);
+      }
+    });
     this.picker_input.addEventListener('change', (event) => {
-      const incomming_value = event.target.value;
       const regexp = /(\d{4})-(\d{2})/g;
-      const result = regexp.exec(incomming_value);
+      const result = regexp.exec(event.target.value);
       if (!result) return;
-      if (result[1])
-        this._year =  parseInt(result[1]);
-      if (result[2])
+      if (result[1]) {
+        this._year = parseInt(result[1]);
+      }
+      if (result[2]) {
         this._month = result[2];
+      }
     });
   }
 
-  _render(){
+  _render() {
     if (this._show_picker) {
       this.picker_widget.style.display = 'block';
       this.picker_input.value = this.value;
@@ -148,4 +155,4 @@ class DatePicker extends HTMLElement {
   }
 }
 
-window.customElements.define('date-picker', DatePicker);
+window.customElements.define('year-month-picker', YearMonthPicker);
