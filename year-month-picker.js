@@ -15,7 +15,6 @@ class YearMonthPicker extends HTMLElement {
     this._show_picker = false;
     this._year = null;
     this._month = null;
-    this.today();
   }
 
   today() {
@@ -86,6 +85,8 @@ class YearMonthPicker extends HTMLElement {
     this._initElements();
     this._setupEvents();
     this._render();
+    this.getAttribute('value') ? this._tryParseCurrentValue(this.getAttribute('value')) :
+                               this.today();
   }
 
   _initElements() {
@@ -118,6 +119,7 @@ class YearMonthPicker extends HTMLElement {
     this.previous_year_btn.addEventListener('click', (event) => this._changeYearBy(-1));
     this.accept_btn.addEventListener('click', (event) => this._togglePicker(false));
     this.picker_input.addEventListener('focus', (event) => this._togglePicker(true));
+    this.picker_input.addEventListener('change', (event) => this._tryParseCurrentValue(event.target.value));
 
     this.month_btn.forEach((btn) => {
       btn.addEventListener('click', (event) => {
@@ -132,17 +134,18 @@ class YearMonthPicker extends HTMLElement {
         this._togglePicker(false);
       }
     });
-    this.picker_input.addEventListener('change', (event) => {
-      const regexp = /(\d{4})-(\d{2})/g;
-      const result = regexp.exec(event.target.value);
-      if (!result) return;
-      if (result[1]) {
-        this._year = parseInt(result[1]);
-      }
-      if (result[2]) {
-        this._month = result[2];
-      }
-    });
+  }
+
+  _tryParseCurrentValue(value) {
+    const regexp = /(\d{4})-(\d{2})/g;
+    const result = regexp.exec(value);
+    if (!result) return;
+    if (result[1]) {
+      this._year = parseInt(result[1]);
+    }
+    if (result[2]) {
+      this._month = result[2];
+    }
   }
 
   _render() {
