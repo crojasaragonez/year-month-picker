@@ -56,7 +56,7 @@ class YearMonthPicker extends HTMLElement {
       }
     </style>
     <div class="picker-container">
-      <input type="text" id="picker_input">
+      <input type="text" id="picker_input" pattern="\\d{4}-\\d{2}" placeholder="YYYY-MM">
       <div class="picker-body">
         <div class="year-picker">
           <button id="previous-year"><</button>
