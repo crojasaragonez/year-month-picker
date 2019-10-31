@@ -19,7 +19,7 @@ class YearMonthPicker extends HTMLElement {
 
   today() {
     this._year = new Date().getFullYear();
-    this._month = ('0' + new Date().getMonth()).slice(-2);
+    this._month = ('0' + (new Date().getMonth() + 1)).slice(-2);
   }
 
   get value() {
